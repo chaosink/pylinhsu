@@ -29,5 +29,15 @@ def Hdr2Ldr(img):
 def Ldr2Hdr(img):
     return (img / 255.0).astype(float_type)
 
-def LinearHdr2SrgbLdr(img_in, gamma=2.4):
-    return Hdr2Ldr(Linear2Srgb(img_in))
+def LinearHdr2SrgbLdr(img_in, div_alpha=True, gamma=2.4):
+    img = img_in
+    if div_alpha:
+        img = img.copy()
+        img[:,:,:3][img[:,:,3] != 0] /= img[:,:,3:][img[:,:,3] != 0]
+    return Hdr2Ldr(Linear2Srgb(img, gamma))
+
+def SrgbLdr2LinearHdr(img_in, mul_alpha=False, gamma=2.4):
+    img = Srgb2Linear(Ldr2Hdr(img_in), gamma)
+    if mul_alpha:
+        img[:,:,:3] *= img[:,:,3:]
+    return img
