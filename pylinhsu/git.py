@@ -4,18 +4,21 @@ import argparse
 from pylinhsu.log import info, error
 from pylinhsu.sys import get_process_output
 
-#----------------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------------------
 # Helper functions, assuming already in a Git repo dir.
 
 def get_git_hashes():
     hashes = get_process_output('git log --pretty=%h')
     return hashes.strip().split('\n')
 
+
 def get_git_current_branch():
     branch_current = get_process_output('git rev-parse --abbrev-ref HEAD')
     return branch_current.strip().split('\n')[0]
 
-#----------------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------------------
 # GitContext
 
 class GitContext:
@@ -43,7 +46,8 @@ class GitContext:
         if self.work_dir_bak != self.work_dir:
             os.chdir(self.work_dir_bak)
 
-#----------------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------------------
 # Functions for sub-commands.
 
 def recommit(hash, branch=None, work_dir='.'):
@@ -78,6 +82,7 @@ def recommit(hash, branch=None, work_dir='.'):
         os.system(f'git branch -d {branch_tmp}')
         info(f'Recommit on target branch {branch} in dir {work_dir} done!')
 
+
 def append_all(branch=None, work_dir='.'):
     '''Append all the current changes to the latest commit.'''
     with GitContext(branch, work_dir):
@@ -85,7 +90,8 @@ def append_all(branch=None, work_dir='.'):
         os.system(f'git commit --amend --no-edit')
     info(f'Append_all on target branch {branch} in dir {work_dir} done!')
 
-#----------------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------------------
 # Main entry.
 
 if __name__ == '__main__':
@@ -95,22 +101,22 @@ if __name__ == '__main__':
     subparsers = parser.add_subparsers(required=True, dest='subparser_name')
 
     parser_recommit = subparsers.add_parser('recommit', aliases=['rc'],
-        description=recommit.__doc__,
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+                                            description=recommit.__doc__,
+                                            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser_recommit.add_argument('hash', metavar='hash', type=str,
-        help='hash of the commit after which all the commits are recommitted')
+                                 help='hash of the commit after which all the commits are recommitted')
     parser_recommit.add_argument('--branch', '-b', type=str, default=None,
-        help='working branch (None: current branch)')
+                                 help='working branch (None: current branch)')
     parser_recommit.add_argument('--work_dir', '-d', type=str, default=".",
-        help='working directory')
+                                 help='working directory')
 
     parser_append_all = subparsers.add_parser('append_all', aliases=['aa'],
-        description=append_all.__doc__,
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+                                              description=append_all.__doc__,
+                                              formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser_append_all.add_argument('--branch', '-b', type=str, default=None,
-        help='working branch (None: current branch)')
+                                   help='working branch (None: current branch)')
     parser_append_all.add_argument('--work_dir', '-d', type=str, default=".",
-        help='working directory')
+                                   help='working directory')
 
     args = parser.parse_args()
 
