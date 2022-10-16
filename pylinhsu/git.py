@@ -122,6 +122,8 @@ if __name__ == '__main__':
                                  help='working branch (None: current branch)')
     parser_recommit.add_argument('--work_dir', '-d', type=str, default=".",
                                  help='working directory')
+    parser_recommit.set_defaults(
+        func=lambda args: recommit(args.hash, args.branch, args.work_dir))
 
     # append_all
     parser_append_all = subparsers.add_parser('append_all', aliases=['aa'],
@@ -131,6 +133,8 @@ if __name__ == '__main__':
                                    help='working branch (None: current branch)')
     parser_append_all.add_argument('--work_dir', '-d', type=str, default=".",
                                    help='working directory')
+    parser_append_all.set_defaults(
+        func=lambda args: append_all(args.branch, args.work_dir))
 
     # delete_branch
     parser_delete_branch = subparsers.add_parser('delete_branch', aliases=['db'],
@@ -140,12 +144,8 @@ if __name__ == '__main__':
                                       help='working branch (None: current branch)')
     parser_delete_branch.add_argument('--work_dir', '-d', type=str, default=".",
                                       help='working directory')
+    parser_delete_branch.set_defaults(
+        func=lambda args: delete_branch(args.branch, args.work_dir))
 
     args = parser.parse_args()
-
-    if args.subparser_name == 'recommit':
-        recommit(args.hash, args.branch, args.work_dir)
-    elif args.subparser_name == 'append_all':
-        append_all(args.branch, args.work_dir)
-    elif args.subparser_name == 'delete_branch':
-        delete_branch(args.branch, args.work_dir)
+    args.func(args)
