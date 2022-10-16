@@ -9,6 +9,9 @@ D = bpy.data
 C = bpy.context
 
 
+# ----------------------------------------------------------------------------------------------------
+# Functions.
+
 def delete_all():
     O.object.select_all(action='SELECT')
     O.object.delete(use_global=False, confirm=False)

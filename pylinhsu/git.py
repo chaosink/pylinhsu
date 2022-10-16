@@ -55,7 +55,8 @@ def recommit(hash, branch=None, work_dir='.'):
         hashes = get_git_hashes()
         hl = len(hashes[0])
         if len(hash) < hl:
-            error(f'Hash length should be {hl} at least for this repo, however {len(hash)} given!')
+            error(
+                f'Hash length should be {hl} at least for this repo, however {len(hash)} given!')
             return
         hash = hash[:hl]
 
@@ -101,9 +102,9 @@ def delete_branch(branch=None, work_dir='.'):
         info(
             f'Delete_branch on remote target branch {gc.branch} in dir {gc.work_dir} done!')
 
+
 # ----------------------------------------------------------------------------------------------------
 # Main entry.
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(

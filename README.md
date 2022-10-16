@@ -1,2 +1,3 @@
 # pylinhsu
-Lin Hsu's utility library
+
+Lin Hsu's Python utility libraries.
