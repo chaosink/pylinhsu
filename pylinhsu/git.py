@@ -23,10 +23,6 @@ def get_git_current_branch():
 
 class GitContext:
     '''Change/recover Git branch and working dir.'''
-    branch: str
-    work_dir: str
-    branch_bak: str
-    work_dir_bak: str
 
     def __init__(self, branch, work_dir):
         self.branch = branch
@@ -37,11 +33,14 @@ class GitContext:
         if self.work_dir_bak != self.work_dir:
             os.chdir(self.work_dir)
         self.branch_bak = get_git_current_branch()
-        if self.branch != None and self.branch_bak != self.branch:
+        if self.branch is None:
+            self.branch = get_git_current_branch()
+        if self.branch_bak != self.branch:
             os.system(f'git checkout {self.branch}')
+        return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        if self.branch != None and self.branch_bak != self.branch:
+        if self.branch_bak != self.branch:
             os.system(f'git checkout {self.branch_bak}')
         if self.work_dir_bak != self.work_dir:
             os.chdir(self.work_dir_bak)
@@ -57,10 +56,7 @@ def recommit(hash, branch=None, work_dir='.'):
         return
     hash = hash[:7]
 
-    with GitContext(branch, work_dir):
-        if branch is None:
-            branch = get_git_current_branch()
-
+    with GitContext(branch, work_dir) as gc:
         hashes = get_git_hashes()
         try:
             hashes = hashes[:hashes.index(hash)]
@@ -75,24 +71,38 @@ def recommit(hash, branch=None, work_dir='.'):
         for hash in hashes:
             os.system(f'git cherry-pick {hash}')
             os.system('git commit --amend --reset-author --no-edit')
-        info(f'Recommit on temp branch {branch_tmp} in dir {work_dir} done!')
+        info(
+            f'Recommit on temp branch {branch_tmp} in dir {gc.work_dir} done!')
 
-        os.system(f'git checkout {branch}')
+        os.system(f'git checkout {gc.branch}')
         os.system(f'git reset --hard {branch_tmp}')
         os.system(f'git branch -d {branch_tmp}')
-        info(f'Recommit on target branch {branch} in dir {work_dir} done!')
+        info(
+            f'Recommit on target branch {gc.branch} in dir {gc.work_dir} done!')
 
 
 def append_all(branch=None, work_dir='.'):
     '''Append all the current changes to the latest commit.'''
-    with GitContext(branch, work_dir):
+    with GitContext(branch, work_dir) as gc:
         os.system(f'git add --all')
         os.system(f'git commit --amend --no-edit')
-    info(f'Append_all on target branch {branch} in dir {work_dir} done!')
+        info(
+            f'Append_all on target branch {gc.branch} in dir {gc.work_dir} done!')
 
+
+def delete_branch(branch=None, work_dir='.'):
+    '''Delete branch from local and remote origin.'''
+    with GitContext(branch, work_dir) as gc:
+        os.system(f'git branch -D {gc.branch}')
+        info(
+            f'Delete_branch on local target branch {gc.branch} in dir {gc.work_dir} done!')
+        os.system(f'git push -d origin {gc.branch}')
+        info(
+            f'Delete_branch on remote target branch {gc.branch} in dir {gc.work_dir} done!')
 
 # ----------------------------------------------------------------------------------------------------
 # Main entry.
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -100,6 +110,7 @@ if __name__ == '__main__':
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     subparsers = parser.add_subparsers(required=True, dest='subparser_name')
 
+    # recommit
     parser_recommit = subparsers.add_parser('recommit', aliases=['rc'],
                                             description=recommit.__doc__,
                                             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -110,6 +121,7 @@ if __name__ == '__main__':
     parser_recommit.add_argument('--work_dir', '-d', type=str, default=".",
                                  help='working directory')
 
+    # append_all
     parser_append_all = subparsers.add_parser('append_all', aliases=['aa'],
                                               description=append_all.__doc__,
                                               formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -118,9 +130,20 @@ if __name__ == '__main__':
     parser_append_all.add_argument('--work_dir', '-d', type=str, default=".",
                                    help='working directory')
 
+    # delete_branch
+    parser_delete_branch = subparsers.add_parser('delete_branch', aliases=['db'],
+                                                 description=delete_branch.__doc__,
+                                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser_delete_branch.add_argument('--branch', '-b', type=str, default=None,
+                                      help='working branch (None: current branch)')
+    parser_delete_branch.add_argument('--work_dir', '-d', type=str, default=".",
+                                      help='working directory')
+
     args = parser.parse_args()
 
     if args.subparser_name == 'recommit':
         recommit(args.hash, args.branch, args.work_dir)
     elif args.subparser_name == 'append_all':
         append_all(args.branch, args.work_dir)
+    elif args.subparser_name == 'delete_branch':
+        delete_branch(args.branch, args.work_dir)
