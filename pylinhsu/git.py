@@ -9,7 +9,7 @@ from pylinhsu.sys import get_process_output
 # Helper functions, assuming already in a Git repo dir.
 
 def get_git_hashes():
-    hashes = get_process_output('git log --pretty=%h')
+    hashes = get_process_output('git log --format=%h')
     return hashes.strip().split('\n')
 
 
@@ -51,13 +51,14 @@ class GitContext:
 
 def recommit(hash, branch=None, work_dir='.'):
     '''Recommit all commits after the commit with the specified hash.'''
-    if len(hash) < 7:
-        error(f'Hash length should be 7 at least, {len(hash)} given!')
-        return
-    hash = hash[:7]
-
     with GitContext(branch, work_dir) as gc:
         hashes = get_git_hashes()
+        hl = len(hashes[0])
+        if len(hash) < hl:
+            error(f'Hash length should be {hl} at least for this repo, however {len(hash)} given!')
+            return
+        hash = hash[:hl]
+
         try:
             hashes = hashes[:hashes.index(hash)]
         except ValueError:
