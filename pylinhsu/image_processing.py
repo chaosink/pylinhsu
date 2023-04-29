@@ -1,5 +1,4 @@
 import numpy as np
-import imageio as iio
 
 import pylinhsu.color_transform as ct
 
