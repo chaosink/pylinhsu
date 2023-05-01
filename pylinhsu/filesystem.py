@@ -1,5 +1,6 @@
 
 import shutil
+import os.path as op
 from pathlib import Path
 import uuid
 import hashlib
@@ -85,8 +86,6 @@ def compare_md5s(keys, a, b):
 
 
 def insert_tag(path, tag):
-    p = Path(path)
-    result = f'{p.stem}.{tag}'
-    if p.suffix:
-        result += '.' + p.suffix
+    root, ext = op.splitext(path)
+    result = f'{root}.{tag}{ext}'
     return result
