@@ -1,15 +1,7 @@
 import os
 import sys
-import subprocess
 import importlib.util
-from pylinhsu import log
-
-
-def get_process_output(process):
-    process = subprocess.Popen(
-        process, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = process.communicate()
-    return stdout.decode('utf8')
+import argparse
 
 
 def load_script(file_path):
@@ -21,11 +13,9 @@ def load_script(file_path):
     return module
 
 
-def run_command(command, working_dir='.', environ={}):
-    for k, v in environ.items():
-        os.environ[k] = v
-    cwd = os.getcwd()
-    os.chdir(working_dir)
-    log.info(f'Command: {command}')
-    os.system(command)
-    os.chdir(cwd)
+def parse_arg_ang_get_config(prog='', description=''):
+    parser = argparse.ArgumentParser(prog=prog, description=description)
+    parser.add_argument('config_file_path', type=str, help='Config file path')
+    args = parser.parse_args()
+    config = load_script(args.config_file_path)
+    return config

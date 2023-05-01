@@ -2,7 +2,7 @@ import os
 import uuid
 import argparse
 from pylinhsu.log import info, error
-from pylinhsu.sys import get_process_output
+from pylinhsu.os import get_process_output
 
 
 # ----------------------------------------------------------------------------------------------------
