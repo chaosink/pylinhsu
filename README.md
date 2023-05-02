@@ -4,4 +4,8 @@ Lin Hsu's Python utility libraries.
 
 # Install
 
-* Clone the repo and add the dir into the env variable `PYTHONPATH`.
+```
+git clone https://github.com/chaosink/pylinhsu.git
+cd pylinhsu
+pip install -e .
+```
