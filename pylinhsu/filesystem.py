@@ -31,8 +31,8 @@ def remove(path):
         Path(path).unlink()
 
 
-def remove_via_powershell(path):
-    run_command(f'Remove-Item -Recurse -Force -Confirm:$false "{path}"')
+def poweshell_remove(path):
+    run_command(f"powershell Remove-Item -Recurse -Force -Confirm:$false '{path}'")
 
 
 def move(src, dst):
