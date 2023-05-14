@@ -6,6 +6,7 @@ import uuid
 import hashlib
 from checksumdir import dirhash
 from pylinhsu import log
+from pylinhsu.os import run_command
 
 
 def is_dir(path):
@@ -28,6 +29,10 @@ def remove(path):
         shutil.rmtree(path)
     else:
         Path(path).unlink()
+
+
+def remove_via_powershell(path):
+    run_command(f'Remove-Item -Recurse -Force -Confirm:$false "{path}"')
 
 
 def move(src, dst):
