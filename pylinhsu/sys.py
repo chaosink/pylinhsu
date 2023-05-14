@@ -2,6 +2,7 @@ import os
 import sys
 import importlib.util
 import argparse
+import getpass
 
 
 def load_script(file_path):
@@ -19,3 +20,10 @@ def parse_arg_ang_get_config(prog='', description=''):
     args = parser.parse_args()
     config = load_script(args.config_file_path)
     return config
+
+
+def get_password(msg=None):
+    if not msg:
+        msg = 'Please input the password: '
+    password = getpass.getpass(msg)
+    return password
