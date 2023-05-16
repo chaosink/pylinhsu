@@ -1,7 +1,7 @@
 import os
 import sys
 import importlib.util
-import argparse
+from argparse import ArgumentParser, RawTextHelpFormatter
 import getpass
 
 
@@ -15,7 +15,7 @@ def load_script(file_path):
 
 
 def parse_arg_ang_get_config(prog='', description=''):
-    parser = argparse.ArgumentParser(prog=prog, description=description)
+    parser = ArgumentParser(prog=prog, description=description, formatter_class=RawTextHelpFormatter)
     parser.add_argument('config_file_path', type=str, help='Config file path')
     args = parser.parse_args()
     config = load_script(args.config_file_path)
