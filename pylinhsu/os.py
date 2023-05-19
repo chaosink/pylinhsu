@@ -1,6 +1,11 @@
 import os
+import socket
 import subprocess
 from pylinhsu import log
+
+
+def get_hostname():
+    return socket.gethostname()
 
 
 def get_process_output(process):
