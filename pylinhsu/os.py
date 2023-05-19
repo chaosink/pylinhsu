@@ -16,7 +16,8 @@ def run_command(command, working_dir='.', environ={}):
     cwd = os.getcwd()
     os.chdir(working_dir)
     log.info(f'Command: {command}')
-    os.system(command)
+    # os.system(command)
+    subprocess.run(command)
     os.chdir(cwd)
 
 
@@ -27,5 +28,6 @@ def run_commands(commands, working_dir='.', environ={}):
     os.chdir(working_dir)
     for command in commands:
         log.info(f'Command: {command}')
-        os.system(command)
+        # os.system(command)
+        subprocess.run(command)
     os.chdir(cwd)
