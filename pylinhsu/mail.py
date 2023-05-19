@@ -12,9 +12,9 @@ def send_mail(smtp_server, port, send_from, send_to, subject, text=None, passwor
     if text:
         mime.attach(MIMEText(text, "plain"))
 
-    context = ssl.create_default_context()
     with smtplib.SMTP(smtp_server, port) as server:
         if password:
+            context = ssl.create_default_context()
             server.starttls(context=context)
             server.login(send_from, password)
         server.sendmail(send_from, send_to, mime.as_string())
