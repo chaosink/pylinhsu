@@ -13,6 +13,10 @@ def is_dir(path):
     return Path(path).is_dir()
 
 
+def mkdir(path):
+    Path(path).mkdir(parents=True, exist_ok=True)
+
+
 def exists(path):
     return Path(path).exists()
 
@@ -32,11 +36,17 @@ def remove(path):
 
 
 def poweshell_remove(path):
-    run_command(f"powershell Remove-Item -Recurse -Force -Confirm:$false '{path}'")
+    run_command(
+        f"powershell Remove-Item -Recurse -Force -Confirm:$false '{path}'")
 
 
 def move(src, dst):
     shutil.move(src, dst)
+
+
+def poweshell_move(src, dst):
+    run_command(
+        f"powershell Move-Item -Force -Confirm:$false -Path '{src}' -Destination '{dst}'")
 
 
 def backup(path):
