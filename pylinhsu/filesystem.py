@@ -1,6 +1,6 @@
 
 import shutil
-import os.path as op
+import os
 from pathlib import Path
 import uuid
 import hashlib
@@ -41,6 +41,8 @@ def poweshell_remove(path):
 
 
 def move(src, dst):
+    if os.path.exists(dst) and os.path.samefile(src, dst):
+        return
     shutil.move(src, dst)
 
 
@@ -101,6 +103,6 @@ def compare_md5s(keys, a, b):
 
 
 def insert_tag(path, tag):
-    root, ext = op.splitext(path)
+    root, ext = os.path.splitext(path)
     result = f'{root}.{tag}{ext}'
     return result
