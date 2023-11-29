@@ -14,9 +14,11 @@ def load_script(file_path):
     return module
 
 
-def parse_arg_ang_get_config(prog='', description=''):
-    parser = ArgumentParser(prog=prog, description=description, formatter_class=RawTextHelpFormatter)
-    parser.add_argument('config_file_path', type=str, help='Config file path')
+def parse_arg_ang_get_config(prog="", description=""):
+    parser = ArgumentParser(
+        prog=prog, description=description, formatter_class=RawTextHelpFormatter
+    )
+    parser.add_argument("config_file_path", type=str, help="Config file path")
     args = parser.parse_args()
     config = load_script(args.config_file_path)
     return config
@@ -24,6 +26,6 @@ def parse_arg_ang_get_config(prog='', description=''):
 
 def get_password(msg=None):
     if not msg:
-        msg = 'Please input the password: '
+        msg = "Please input the password: "
     password = getpass.getpass(msg)
     return password

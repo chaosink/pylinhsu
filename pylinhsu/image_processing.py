@@ -37,7 +37,7 @@ def add_alpha(img, alpha_map=None):
     elif alpha_map.dtype == np.uint8:
         alpha_map = (alpha_map / 255.0).astype(np.float64)
     result = np.zeros((*img.shape[:2], 4))
-    result[:, :, :img.shape[2]] = img
+    result[:, :, : img.shape[2]] = img
     result[:, :, 3] = alpha_map
     if ldr:
         result = ct.linear_hdr_to_srgb_ldr(result)
@@ -45,17 +45,17 @@ def add_alpha(img, alpha_map=None):
 
 
 def crop_circle(img, radius=None):
-    '''32x16 -> the center 16x16'''
+    """32x16 -> the center 16x16"""
     size = np.array(img.shape[:2])
     if not radius:
         radius = min(size) // 2
     m = (size // 2 - radius).astype(np.int32)
     M = (size // 2 + radius + size % 2).astype(np.int32)
-    return img[m[0]:M[0], m[1]:M[1]]
+    return img[m[0] : M[0], m[1] : M[1]]
 
 
 def get_circle_mask(img, radius=None):
-    '''32x16 -> 32x16 of bool, with only the center circle with radius 16 being True'''
+    """32x16 -> 32x16 of bool, with only the center circle with radius 16 being True"""
     size = np.array(img.shape[:2])
     if not radius:
         radius = min(size) / 2
@@ -73,7 +73,7 @@ circle_mask_sampled_cache = {}
 
 
 def get_circle_mask_sampled(img, radius=None, sample_count=1024**2):
-    '''32x16 -> 32x16 with only the center circle with radius 16 having non-zero SAMPLED alpha (max 1 for HDR, max 255 for LDR)'''
+    """32x16 -> 32x16 with only the center circle with radius 16 having non-zero SAMPLED alpha (max 1 for HDR, max 255 for LDR)"""
     cache_key = (img.shape[:2], radius)
     if cache_key in circle_mask_sampled_cache:
         mask = circle_mask_sampled_cache[cache_key]
@@ -122,24 +122,34 @@ def get_circle_mask_sampled(img, radius=None, sample_count=1024**2):
                             vec = r + [x, y] - center
                             dist2 = np.sum(vec**2, axis=-1)
                             for p in (
-                                    [x, y],
-                                    [int(2 * center[0] - x - 0.5), y],
-                                    [x, int(2 * center[1] - y - 0.5)],
-                                    [int(2 * center[0] - x - 0.5), int(2 * center[1] - y - 0.5)]):
-                                mask[p[0], p[1]] = np.sum(
-                                    dist2 < radius2) / sample_count
-                                mask[int(p[1] + 0.5 - center[1] + center[0]),
-                                     int(p[0] + 0.5 - center[0] + center[1])] = mask[p[0], p[1]]
+                                [x, y],
+                                [int(2 * center[0] - x - 0.5), y],
+                                [x, int(2 * center[1] - y - 0.5)],
+                                [
+                                    int(2 * center[0] - x - 0.5),
+                                    int(2 * center[1] - y - 0.5),
+                                ],
+                            ):
+                                mask[p[0], p[1]] = (
+                                    np.sum(dist2 < radius2) / sample_count
+                                )
+                                mask[
+                                    int(p[1] + 0.5 - center[1] + center[0]),
+                                    int(p[0] + 0.5 - center[0] + center[1]),
+                                ] = mask[p[0], p[1]]
                     else:
                         vec = r + [x, y] - center
                         dist2 = np.sum(vec**2, axis=-1)
                         for p in (
-                                [x, y],
-                                [int(2 * center[0] - x - 0.5), y],
-                                [x, int(2 * center[1] - y - 0.5)],
-                                [int(2 * center[0] - x - 0.5), int(2 * center[1] - y - 0.5)]):
-                            mask[p[0], p[1]] = np.sum(
-                                dist2 < radius2) / sample_count
+                            [x, y],
+                            [int(2 * center[0] - x - 0.5), y],
+                            [x, int(2 * center[1] - y - 0.5)],
+                            [
+                                int(2 * center[0] - x - 0.5),
+                                int(2 * center[1] - y - 0.5),
+                            ],
+                        ):
+                            mask[p[0], p[1]] = np.sum(dist2 < radius2) / sample_count
     circle_mask_sampled_cache[cache_key] = mask
     if img.dtype == np.uint8:
         mask = ct.hdr_to_ldr(mask)
@@ -147,7 +157,7 @@ def get_circle_mask_sampled(img, radius=None, sample_count=1024**2):
 
 
 def mask_circle(img, radius=None):
-    '''32x16 -> 16x16 with alpha, with only the center circle with radius 16 having max alpha (1 for HDR, 255 for LDR)'''
+    """32x16 -> 16x16 with alpha, with only the center circle with radius 16 having max alpha (1 for HDR, 255 for LDR)"""
     img = crop_circle(img, radius)
     mask = get_circle_mask(img, radius)
     result = add_alpha(img)
@@ -156,7 +166,7 @@ def mask_circle(img, radius=None):
 
 
 def mask_circle_sampled(img, radius=None, sample_count=1024**2):
-    '''32x16 -> 16x16 with alpha, with only the center circle with radius 16 having non-zero SAMPLED alpha'''
+    """32x16 -> 16x16 with alpha, with only the center circle with radius 16 having non-zero SAMPLED alpha"""
     img = crop_circle(img, radius)
     ldr = img.dtype == np.uint8
     if ldr:
@@ -170,32 +180,32 @@ def mask_circle_sampled(img, radius=None, sample_count=1024**2):
 
 
 def alpha_gradient_hdr_without_border(size=101):
-    '''return size x size image with verticle HDR alpha gradient and border with color border_color and width 1'''
+    """return size x size image with verticle HDR alpha gradient and border with color border_color and width 1"""
     img = np.ones((size, size, 4))
     alpha = np.linspace(0, 1, size)
-    img = np.einsum('ijk,i->ijk', img, alpha)
+    img = np.einsum("ijk,i->ijk", img, alpha)
     return img
 
 
 def alpha_gradient_hdr(size=101, border=True, border_color=(1.0, 0.0, 0.0, 1.0)):
-    '''return (size+2) x (size+2) image with verticle HDR alpha gradient and border with color border_color and width 1'''
+    """return (size+2) x (size+2) image with verticle HDR alpha gradient and border with color border_color and width 1"""
     img = alpha_gradient_hdr_without_border(size)
     if border:
         img_with_border = np.full(
-            (size+2, size+2, 4), border_color, dtype=np.float64)
-        img_with_border[1:size+1, 1:size+1, :] = img
+            (size + 2, size + 2, 4), border_color, dtype=np.float64
+        )
+        img_with_border[1 : size + 1, 1 : size + 1, :] = img
         img = img_with_border
     return img
 
 
 def alpha_gradient_srgb_ldr(size=101, border=True, border_color=(255, 0, 0, 255)):
-    '''return (size+2) x (size+2) image with verticle LDR alpha gradient and border with color border_color and width 1'''
+    """return (size+2) x (size+2) image with verticle LDR alpha gradient and border with color border_color and width 1"""
     img = alpha_gradient_hdr_without_border(size)
     img = ct.linear_hdr_to_srgb_ldr(img)
     if border:
-        img_with_border = np.full(
-            (size+2, size+2, 4), border_color, dtype=np.uint8)
-        img_with_border[1:size+1, 1:size+1, :] = img
+        img_with_border = np.full((size + 2, size + 2, 4), border_color, dtype=np.uint8)
+        img_with_border[1 : size + 1, 1 : size + 1, :] = img
         img = img_with_border
     return img
 
@@ -221,7 +231,7 @@ def blend(img_front, img_back):
 def lerp(a, b, t):
     if type(t) is not np.ndarray:
         t = np.array([t])
-    y = np.einsum('i,...->i...', 1-t, a) + np.einsum('i,...->i...', t, b)
+    y = np.einsum("i,...->i...", 1 - t, a) + np.einsum("i,...->i...", t, b)
     if y.ndim == 2:
         y = y[np.newaxis, :]
     elif y.ndim == 3:

@@ -1,6 +1,6 @@
 from pylinhsu.bpy import *
 
-'''
+"""
 >>> C.
       active_action
       active_annotation_layer
@@ -106,9 +106,9 @@ from pylinhsu.bpy import *
       window
       window_manager
       workspace
-'''
+"""
 
-'''
+"""
 >>> D.
       actions
       armatures
@@ -184,9 +184,9 @@ from pylinhsu.bpy import *
       window_managers
       workspaces
       worlds
-'''
+"""
 
-'''
+"""
 >>> O.
       action
       anim
@@ -267,75 +267,79 @@ from pylinhsu.bpy import *
       wm
       workspace
       world
-'''
+"""
 
-print(f'{" " * 0}D.window_managers: {len(D.window_managers)}')
-print(f'{" " * 4}D.window_managers["WinMan"].windows: {len(D.window_managers["WinMan"].windows)}')
-print(f'{" " * 8}D.workspaces: {len(D.workspaces)}')
-print(f'{" " * 12}D.screens: {len(D.screens)}')
+print(f"{' ' * 0}D.window_managers: {len(D.window_managers)}")
+print(
+    f"{' ' * 4}D.window_managers['WinMan'].windows: {len(D.window_managers['WinMan'].windows)}"
+)
+print(f"{' ' * 8}D.workspaces: {len(D.workspaces)}")
+print(f"{' ' * 12}D.screens: {len(D.screens)}")
 print()
 
 for window_manager in D.window_managers:
-    print(f'{" " * 0}window_manager: {window_manager.name}')
+    print(f"{' ' * 0}window_manager: {window_manager.name}")
     for window in window_manager.windows:
-        print(f'{" " * 4}window: {window}')
+        print(f"{' ' * 4}window: {window}")
         workspace = window.workspace
-        print(f'{" " * 8}workspace: {workspace.name}')
+        print(f"{' ' * 8}workspace: {workspace.name}")
         for screen in workspace.screens:
-            print(f'{" " * 12}screen: {screen.name}')
+            print(f"{' ' * 12}screen: {screen.name}")
             for area in screen.areas:
-                print(f'{" " * 16}area: {area.type}')
+                print(f"{' ' * 16}area: {area.type}")
                 for region in area.regions:
-                    print(f'{" " * 20}region: {region.type}')
+                    print(f"{' ' * 20}region: {region.type}")
                 for space in area.spaces:
-                    print(f'{" " * 20}space: {space.type} {space}')
+                    print(f"{' ' * 20}space: {space.type} {space}")
 print()
 
-print(f'{" " * 0}D.scenes: {len(D.scenes)}')
+print(f"{' ' * 0}D.scenes: {len(D.scenes)}")
 
-print(f'{" " * 4}D.scenes["Scene"].view_layers: {len(D.scenes["Scene"].view_layers)}')
-print(f'{" " * 4}D.worlds: {len(D.worlds)}')
-print(f'{" " * 4}D.objects: {len(D.objects)}')
+print(f"{' ' * 4}D.scenes['Scene'].view_layers: {len(D.scenes['Scene'].view_layers)}")
+print(f"{' ' * 4}D.worlds: {len(D.worlds)}")
+print(f"{' ' * 4}D.objects: {len(D.objects)}")
 
-print(f'{" " * 8}D.armatures: {len(D.armatures)}')
-print(f'{" " * 8}D.cameras: {len(D.cameras)}')
-print(f'{" " * 8}D.curves: {len(D.curves)}')
-print(f'{" " * 8}D.grease_pencils: {len(D.grease_pencils)}')
-print(f'{" " * 8}D.hair_curves: {len(D.hair_curves)}')
-print(f'{" " * 8}D.images: {len(D.images)}')
+print(f"{' ' * 8}D.armatures: {len(D.armatures)}")
+print(f"{' ' * 8}D.cameras: {len(D.cameras)}")
+print(f"{' ' * 8}D.curves: {len(D.curves)}")
+print(f"{' ' * 8}D.grease_pencils: {len(D.grease_pencils)}")
+print(f"{' ' * 8}D.hair_curves: {len(D.hair_curves)}")
+print(f"{' ' * 8}D.images: {len(D.images)}")
 for image in D.images:
-    print(f'{" " * 16}image: {image.name}')
-print(f'{" " * 8}D.lattices: {len(D.lattices)}')
-print(f'{" " * 8}D.lights: {len(D.lights)}')
-print(f'{" " * 8}D.lightprobes: {len(D.lightprobes)}')
-print(f'{" " * 8}D.meshes: {len(D.meshes)}')
-print(f'{" " * 8}D.metaballs: {len(D.metaballs)}')
-print(f'{" " * 8}D.speakers: {len(D.speakers)}')
-print(f'{" " * 8}D.texts: {len(D.texts)}')
-print(f'{" " * 8}D.volumes: {len(D.volumes)}')
+    print(f"{' ' * 16}image: {image.name}")
+print(f"{' ' * 8}D.lattices: {len(D.lattices)}")
+print(f"{' ' * 8}D.lights: {len(D.lights)}")
+print(f"{' ' * 8}D.lightprobes: {len(D.lightprobes)}")
+print(f"{' ' * 8}D.meshes: {len(D.meshes)}")
+print(f"{' ' * 8}D.metaballs: {len(D.metaballs)}")
+print(f"{' ' * 8}D.speakers: {len(D.speakers)}")
+print(f"{' ' * 8}D.texts: {len(D.texts)}")
+print(f"{' ' * 8}D.volumes: {len(D.volumes)}")
 print()
 
-print(f'{" " * 0}D.actions: {len(D.actions)}')
-print(f'{" " * 0}D.collections: {len(D.collections)}')
-print(f'{" " * 0}D.brushes: {len(D.brushes)}')
-print(f'{" " * 0}D.fonts: {len(D.fonts)}')
-print(f'{" " * 0}D.libraries: {len(D.libraries)}')
-print(f'{" " * 0}D.linestyles: {len(D.linestyles)}')
-print(f'{" " * 0}D.masks: {len(D.masks)}')
-print(f'{" " * 0}D.materials: {len(D.materials)}')
+print(f"{' ' * 0}D.actions: {len(D.actions)}")
+print(f"{' ' * 0}D.collections: {len(D.collections)}")
+print(f"{' ' * 0}D.brushes: {len(D.brushes)}")
+print(f"{' ' * 0}D.fonts: {len(D.fonts)}")
+print(f"{' ' * 0}D.libraries: {len(D.libraries)}")
+print(f"{' ' * 0}D.linestyles: {len(D.linestyles)}")
+print(f"{' ' * 0}D.masks: {len(D.masks)}")
+print(f"{' ' * 0}D.materials: {len(D.materials)}")
 for material in D.materials:
-    print(f'{" " * 4}material: {material.name}')
-print(f'{" " * 0}D.movieclips: {len(D.movieclips)}')
-print(f'{" " * 0}D.node_groups: {len(D.node_groups)}')
-print(f'{" " * 0}D.paint_curves: {len(D.paint_curves)}')
-print(f'{" " * 0}D.palettes: {len(D.palettes)}')
-print(f'{" " * 0}D.particles: {len(D.particles)}')
-print(f'{" " * 0}D.pointclouds: {len(D.pointclouds)}')
-print(f'{" " * 0}D.shape_keys: {len(D.shape_keys)}')
-print(f'{" " * 0}D.sounds: {len(D.sounds)}')
+    print(f"{' ' * 4}material: {material.name}")
+print(f"{' ' * 0}D.movieclips: {len(D.movieclips)}")
+print(f"{' ' * 0}D.node_groups: {len(D.node_groups)}")
+print(f"{' ' * 0}D.paint_curves: {len(D.paint_curves)}")
+print(f"{' ' * 0}D.palettes: {len(D.palettes)}")
+print(f"{' ' * 0}D.particles: {len(D.particles)}")
+print(f"{' ' * 0}D.pointclouds: {len(D.pointclouds)}")
+print(f"{' ' * 0}D.shape_keys: {len(D.shape_keys)}")
+print(f"{' ' * 0}D.sounds: {len(D.sounds)}")
 print()
 
-print(D.scenes['Scene'].objects.items()) # Collection of original data, ordered by add time.
+# Collection of original data, ordered by add time.
+print(D.scenes["Scene"].objects.items())
 print()
-print(D.objects.items()) # Flattened variable for easy access. Collection of references, ordered by name.
+# Flattened variable for easy access. Collection of references, ordered by name.
+print(D.objects.items())
 print()

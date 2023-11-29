@@ -1,4 +1,3 @@
-
 import shutil
 import os
 from pathlib import Path
@@ -36,8 +35,7 @@ def remove(path):
 
 
 def poweshell_remove(path):
-    run_command(
-        f"powershell Remove-Item -Recurse -Force -Confirm:$false '{path}'")
+    run_command(f"powershell Remove-Item -Recurse -Force -Confirm:$false '{path}'")
 
 
 def move(src, dst):
@@ -48,14 +46,15 @@ def move(src, dst):
 
 def poweshell_move(src, dst):
     run_command(
-        f"powershell Move-Item -Force -Confirm:$false -Path '{src}' -Destination '{dst}'")
+        f"powershell Move-Item -Force -Confirm:$false -Path '{src}' -Destination '{dst}'"
+    )
 
 
 def backup(path):
     path_backup = path
     while exists(path_backup):
         id = str(uuid.uuid4())
-        path_backup = f'{path}.bak.{id}'
+        path_backup = f"{path}.bak.{id}"
     copy(path, path_backup)
     return path_backup
 
@@ -81,9 +80,9 @@ def md5(path):
     if not exists(path):
         return None
     if is_dir(path):
-        return dirhash(path, 'md5')
+        return dirhash(path, "md5")
     else:
-        return hashlib.md5(open(path, 'rb').read()).hexdigest()
+        return hashlib.md5(open(path, "rb").read()).hexdigest()
 
 
 def md5s(paths):
@@ -104,5 +103,5 @@ def compare_md5s(keys, a, b):
 
 def insert_tag(path, tag):
     root, ext = os.path.splitext(path)
-    result = f'{root}.{tag}{ext}'
+    result = f"{root}.{tag}{ext}"
     return result

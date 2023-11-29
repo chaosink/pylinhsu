@@ -34,9 +34,9 @@ def fft(x):
         X_odd = fft(x[1::2])
         factor = np.exp(-2j * np.pi * np.arange(N) / N)
 
-        X = np.concatenate([
-            X_even + factor[:N // 2] * X_odd,
-            X_even + factor[N // 2:] * X_odd])
+        X = np.concatenate(
+            [X_even + factor[: N // 2] * X_odd, X_even + factor[N // 2 :] * X_odd]
+        )
         return X
 
 
@@ -62,12 +62,10 @@ def fft_vectorized(x):
 
     # build-up each level of the recursive calculation all at once
     while X.shape[0] < N:
-        X_even = X[:, :X.shape[1] // 2]
-        X_odd = X[:, X.shape[1] // 2:]
-        factor = np.exp(-1j * np.pi * np.arange(X.shape[0])
-                        / X.shape[0])[:, None]
-        X = np.vstack([X_even + factor * X_odd,
-                       X_even - factor * X_odd])
+        X_even = X[:, : X.shape[1] // 2]
+        X_odd = X[:, X.shape[1] // 2 :]
+        factor = np.exp(-1j * np.pi * np.arange(X.shape[0]) / X.shape[0])[:, None]
+        X = np.vstack([X_even + factor * X_odd, X_even - factor * X_odd])
 
     return X.ravel()
 
@@ -85,7 +83,10 @@ def dft_simple(x):
 
 
 from sympy import oo, Symbol, integrate
+
+
 def convolve(f, g, t, lower_limit=-oo, upper_limit=oo):
-    tau = Symbol('__very_unlikely_name__', real=True)
-    return integrate(f.subs(t, tau) * g.subs(t, t - tau),
-        (tau, lower_limit, upper_limit))
+    tau = Symbol("__very_unlikely_name__", real=True)
+    return integrate(
+        f.subs(t, tau) * g.subs(t, t - tau), (tau, lower_limit, upper_limit)
+    )

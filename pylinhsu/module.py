@@ -3,7 +3,7 @@ import sys
 
 
 module_aliases = {
-    'git': ['g'],
+    "git": ["g"],
 }
 
 
@@ -17,10 +17,10 @@ def get_module_name(m):
 
 
 def run_module(m, args):
-    os.system(f'python -m pylinhsu.{m} {" ".join(args)}')
+    os.system(f"python -m pylinhsu.{m} {' '.join(args)}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     if len(sys.argv) > 1:
         m = get_module_name(sys.argv[1])
         run_module(m, sys.argv[2:])

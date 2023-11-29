@@ -2,15 +2,15 @@ from termcolor import colored
 
 
 def green(s):
-    return colored(s, 'green')
+    return colored(s, "green")
 
 
 def yellow(s):
-    return colored(s, 'yellow')
+    return colored(s, "yellow")
 
 
 def red(s):
-    return colored(s, 'red')
+    return colored(s, "red")
 
 
 def info(s):

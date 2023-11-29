@@ -19,6 +19,6 @@ def test_delta_hms():
     print(time.delta_hms(ts0, ts1))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_now()
     test_delta_hms()

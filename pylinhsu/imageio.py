@@ -12,10 +12,15 @@ from imageio import *
 # EXR_LC = 0x0040  # save images with one luminance and two chroma channels,
 #                  # rather than as RGB (lossy compression)
 
+
 def imwrite_float(file_path, img):
-    imwrite(file_path, img.astype(np.float32), flags=plugins._freeimage.IO_FLAGS.EXR_FLOAT)
+    imwrite(
+        file_path, img.astype(np.float32), flags=plugins._freeimage.IO_FLAGS.EXR_FLOAT
+    )
+
 
 def imwrite_half(file_path, img):
     imwrite(file_path, img.astype(np.float32))
+
 
 imread = v2.imread

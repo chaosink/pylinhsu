@@ -12,12 +12,13 @@ O = bpy.ops
 # ----------------------------------------------------------------------------------------------------
 # Functions.
 
+
 def delete_all():
-    O.object.select_all(action='SELECT')
+    O.object.select_all(action="SELECT")
     O.object.delete(use_global=False, confirm=False)
 
 
-def do_in_area_region(func, area_type, region_type='WINDOW'):
+def do_in_area_region(func, area_type, region_type="WINDOW"):
     for area in C.screen.areas:
         if area.type == area_type:
             for region in area.regions:
@@ -44,7 +45,8 @@ def do_in_area_space(func, area_type, space_type):
 def use_shading_type(shading_type):
     def func():
         C.space_data.shading.type = shading_type
-    do_in_area_space(func, 'VIEW_3D', 'VIEW_3D')
+
+    do_in_area_space(func, "VIEW_3D", "VIEW_3D")
 
 
 def set_active_layer_collection_by_name(lc_name):
@@ -61,4 +63,5 @@ def close_layer_collections():
     def func():
         # O.outliner.expanded_toggle()
         O.outliner.show_one_level(open=False)
-    do_in_area_region(func, 'OUTLINER')
+
+    do_in_area_region(func, "OUTLINER")
