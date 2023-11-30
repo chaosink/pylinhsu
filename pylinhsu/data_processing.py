@@ -75,6 +75,10 @@ def merge_csvs(csv_files, vertical=True, skip_first_row_column=False, interlaced
     return merge
 
 
+def read_xlsx(path, header=0, usecols=None):
+    return pd.read_excel(path, header=header, usecols=usecols, engine="openpyxl")
+
+
 def csv_to_xlsx(csv_path, xlsx_path):
     df = read_csv_as_dataframe(csv_path, header=None)
     # xlsxwriter is faster and more compressed than openpyxl.
@@ -95,3 +99,7 @@ def csv_to_feather(csv_path, feather_path):
 def csv_to_parquet(csv_path, parquet_path):
     df = read_csv_as_dataframe(csv_path, header=None)
     df.to_parquet(parquet_path)
+
+
+def df_to_xlsx(df, xlsx_path, header=True):
+    df.to_excel(xlsx_path, header=header, index=False, engine="xlsxwriter")

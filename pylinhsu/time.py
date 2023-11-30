@@ -17,3 +17,7 @@ def delta_hms(ts0, ts1):
     d = ts1 - ts0
     epoch_ts = EPOCH + d
     return epoch_ts.strftime("%H:%M:%S")
+
+
+def mktime(t):
+    return time.mktime(t)
