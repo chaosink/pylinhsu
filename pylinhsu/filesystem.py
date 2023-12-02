@@ -105,3 +105,29 @@ def insert_tag(path, tag):
     root, ext = os.path.splitext(path)
     result = f"{root}.{tag}{ext}"
     return result
+
+
+FILESIZE_STR_BASE_1024_MAX_LEN = 11
+FILESIZE_STR_BASE_1000_MAX_LEN = 10
+
+
+def filesize_str(filesize, base_1024_T_or_1000_F=True):
+    base = 1024 if base_1024_T_or_1000_F else 1000
+    units = ["B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB", "BiB"]
+    unit_index = 0
+    while filesize >= base:
+        filesize /= base
+        unit_index += 1
+    unit = units[unit_index]
+    unit_len = 3
+    if not base_1024_T_or_1000_F:
+        unit = unit.replace("i", "")
+        unit_len = 2
+    unit = f"{unit:>{unit_len}}"
+    if unit_index == 0:
+        return f"{filesize} {unit}"
+    return f"{filesize:.2f} {unit}"
+
+
+def path_filesize_str(path, base_1024_T_or_1000_F=True):
+    return filesize_str(os.path.getsize(path), base_1024_T_or_1000_F)

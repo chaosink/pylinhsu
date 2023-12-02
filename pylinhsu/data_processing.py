@@ -2,6 +2,8 @@ import os
 import csv
 import pandas as pd
 import numpy as np
+from pylinhsu.time import benchmark
+import pylinhsu.filesystem as fs
 
 
 def has_tab(path):
@@ -92,6 +94,45 @@ def csv_to_csv_gz(csv_path, csv_gz_path):
     df.to_csv(csv_gz_path, header=False, index=False, compression="gzip")
 
 
+def read_feather(path, use_threads=True):
+    df = pd.read_feather(path, use_threads=use_threads)
+    return df.values.tolist()
+
+    # Benchmark
+    for compression in [["lz4", 16], ["zstd", 22]]:
+        for compression_level in [None, compression[1]]:
+            test_name = f"{compression[0]:4} {str(compression_level):4} read"
+            path_compression = path.replace(
+                "feather", f"{compression[0]}.{str(compression_level)}.feather"
+            )
+            benchmark(
+                lambda: pd.read_feather(path_compression, use_threads=use_threads),
+                10,
+                test_name,
+            )
+            print(
+                f"{test_name}: {fs.path_filesize_str(path_compression):>{fs.FILESIZE_STR_BASE_1024_MAX_LEN}}"
+            )
+
+
+def read_parquet(path):
+    df = pd.read_parquet(path)
+    return df.values.tolist()
+
+    # Benchmark
+    for compression in ["snappy", "gzip", "brotli", "lz4", "zstd"]:
+        test_name = f"{compression:6} read"
+        path_compression = path.replace("parquet", f"{compression}.parquet")
+        benchmark(
+            lambda: pd.read_parquet(path_compression),
+            10,
+            test_name,
+        )
+        print(
+            f"{test_name}: {fs.path_filesize_str(path_compression):>{fs.FILESIZE_STR_BASE_1024_MAX_LEN}}"
+        )
+
+
 def csv_to_feather(csv_path, feather_path, names=None):
     df = read_csv_as_dataframe(csv_path, header=None)
     if names:
@@ -99,11 +140,30 @@ def csv_to_feather(csv_path, feather_path, names=None):
     # zstd has larger compression ratio than lz4 with default compression_level.
     # Compression with the highest levels is too slow.
     df.to_feather(feather_path, compression="zstd")
+    return
 
-    # for compression in [["lz4", 16], ["zstd", 22]]:
-    #     for compression_level in [None, compression[1]]:
-    #         df.to_feather(feather_path, compression=compression[0], compression_level=compression_level)
-    #         print(f"{compression[0]:4} {str(compression_level):4}: {os.path.getsize(feather_path)/1024/1024:>5.2f} MiB")
+    # Benchmark
+    print(
+        f"CSV    filesize: {fs.path_filesize_str(csv_path):>{fs.FILESIZE_STR_BASE_1024_MAX_LEN}}"
+    )
+    for compression in [["lz4", 16], ["zstd", 22]]:
+        for compression_level in [None, compression[1]]:
+            test_name = f"{compression[0]:4} {str(compression_level):4} write"
+            feather_path_compression = feather_path.replace(
+                "feather", f"{compression[0]}.{str(compression_level)}.feather"
+            )
+            benchmark(
+                lambda: df.to_feather(
+                    feather_path_compression,
+                    compression=compression[0],
+                    compression_level=compression_level,
+                ),
+                10,
+                test_name,
+            )
+            print(
+                f"{test_name}: {fs.path_filesize_str(feather_path_compression):>{fs.FILESIZE_STR_BASE_1024_MAX_LEN}}"
+            )
 
 
 def csv_to_parquet(csv_path, parquet_path, names=None):
@@ -112,10 +172,28 @@ def csv_to_parquet(csv_path, parquet_path, names=None):
         df.columns = names
     # brotli has the largest compression ratio.
     df.to_parquet(parquet_path, compression="brotli")
+    return
 
-    # for compression in ["snappy", "gzip", "brotli", "lz4", "zstd"]:
-    #     df.to_parquet(parquet_path, compression=compression)
-    #     print(f"{compression:6}: {os.path.getsize(parquet_path)/1024/1024:>5.2f} MiB")
+    # Benchmark
+    print(
+        f"CSV filesize: {fs.path_filesize_str(csv_path):>{fs.FILESIZE_STR_BASE_1024_MAX_LEN}}"
+    )
+    for compression in ["snappy", "gzip", "brotli", "lz4", "zstd"]:
+        test_name = f"{compression:6} write"
+        parquet_path_compression = parquet_path.replace(
+            "parquet", f"{compression}.parquet"
+        )
+        benchmark(
+            lambda: df.to_parquet(
+                parquet_path_compression,
+                compression=compression,
+            ),
+            10,
+            test_name,
+        )
+        print(
+            f"{test_name}: {fs.path_filesize_str(parquet_path_compression):>{fs.FILESIZE_STR_BASE_1024_MAX_LEN}}"
+        )
 
 
 def df_to_xlsx(df, xlsx_path, header=True):

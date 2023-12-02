@@ -21,3 +21,15 @@ def delta_hms(ts0, ts1):
 
 def mktime(t):
     return time.mktime(t)
+
+
+def benchmark(func, repeat=1000, name=None):
+    ts_begin = now()
+    for i in range(repeat):
+        func()
+    ts_end = now()
+    ts_delta = ts_end - ts_begin
+    print_str = "Time"
+    if name:
+        print_str += " of " + name
+    print(f"{print_str}: {ts_delta / repeat}")
