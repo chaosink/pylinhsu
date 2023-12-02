@@ -1,3 +1,4 @@
+import os
 import csv
 import pandas as pd
 import numpy as np
@@ -91,14 +92,30 @@ def csv_to_csv_gz(csv_path, csv_gz_path):
     df.to_csv(csv_gz_path, header=False, index=False, compression="gzip")
 
 
-def csv_to_feather(csv_path, feather_path):
+def csv_to_feather(csv_path, feather_path, names=None):
     df = read_csv_as_dataframe(csv_path, header=None)
-    df.to_feather(feather_path)
+    if names:
+        df.columns = names
+    # zstd has larger compression ratio than lz4 with default compression_level.
+    # Compression with the highest levels is too slow.
+    df.to_feather(feather_path, compression="zstd")
+
+    # for compression in [["lz4", 16], ["zstd", 22]]:
+    #     for compression_level in [None, compression[1]]:
+    #         df.to_feather(feather_path, compression=compression[0], compression_level=compression_level)
+    #         print(f"{compression[0]:4} {str(compression_level):4}: {os.path.getsize(feather_path)/1024/1024:>5.2f} MiB")
 
 
-def csv_to_parquet(csv_path, parquet_path):
+def csv_to_parquet(csv_path, parquet_path, names=None):
     df = read_csv_as_dataframe(csv_path, header=None)
-    df.to_parquet(parquet_path)
+    if names:
+        df.columns = names
+    # brotli has the largest compression ratio.
+    df.to_parquet(parquet_path, compression="brotli")
+
+    # for compression in ["snappy", "gzip", "brotli", "lz4", "zstd"]:
+    #     df.to_parquet(parquet_path, compression=compression)
+    #     print(f"{compression:6}: {os.path.getsize(parquet_path)/1024/1024:>5.2f} MiB")
 
 
 def df_to_xlsx(df, xlsx_path, header=True):
