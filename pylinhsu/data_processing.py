@@ -2,6 +2,7 @@ import os
 import csv
 import pandas as pd
 import numpy as np
+from io import StringIO
 from pylinhsu.time import benchmark
 import pylinhsu.filesystem as fs
 
@@ -14,12 +15,28 @@ def has_tab(path):
     return False
 
 
+def str_has_tab(str):
+    lines = str.split("\n")
+    for l in lines:
+        if l.find("\t") != -1:
+            return True
+    return False
+
+
 def get_csv_sep(path):
     return "\t" if has_tab(path) else ","
 
 
+def get_csv_str_sep(str):
+    return "\t" if str_has_tab(str) else ","
+
+
 def get_csv_dialect(path):
     return "excel-tab" if has_tab(path) else "excel"
+
+
+def get_csv_str_dialect(str):
+    return "excel-tab" if str_has_tab(str) else "excel"
 
 
 def read_csv(path):
@@ -29,9 +46,22 @@ def read_csv(path):
     return data
 
 
-def read_csv_as_dataframe(path, header="infer"):
+def read_csv_as_df(path, header="infer"):
     sep = get_csv_sep(path)
     df = pd.read_csv(path, sep=sep, header=header)
+    return df
+
+
+def read_csv_str(str):
+    dialect = get_csv_str_dialect(str)
+    f = StringIO(str)
+    data = list(csv.reader(f, dialect))
+    return data
+
+
+def read_csv_str_as_df(str, header="infer"):
+    sep = get_csv_str_sep(str)
+    df = pd.read_csv(StringIO(str), sep=sep, header=header)
     return df
 
 
@@ -81,16 +111,27 @@ def merge_csvs(csv_files, vertical=True, skip_first_row_column=False, interlaced
 def read_xlsx(path, header=0, usecols=None):
     return pd.read_excel(path, header=header, usecols=usecols, engine="openpyxl")
 
+    # Cannot execute in parallel.
+    import xlwings as xw
+
+    excel_app = xw.App(visible=False)
+    excel_book = excel_app.books.open(xlsx_path)
+    excel_sheet = excel_book.sheets[0].used_range.value
+    data = pd.DataFrame(excel_sheet)
+    excel_book.close()
+    excel_app.quit()
+    return data
+
 
 def csv_to_xlsx(csv_path, xlsx_path):
-    df = read_csv_as_dataframe(csv_path, header=None)
+    df = read_csv_as_df(csv_path, header=None)
     # xlsxwriter is faster and more compressed than openpyxl.
     df.to_excel(xlsx_path, header=False, index=False, engine="xlsxwriter")
     # df.to_excel(xlsx_path, header=False, index=False, engine='openpyxl')
 
 
 def csv_to_csv_gz(csv_path, csv_gz_path):
-    df = read_csv_as_dataframe(csv_path, header=None)
+    df = read_csv_as_df(csv_path, header=None)
     df.to_csv(csv_gz_path, header=False, index=False, compression="gzip")
 
 
@@ -106,7 +147,7 @@ def read_feather(path, use_threads=True):
                 "feather", f"{compression[0]}.{str(compression_level)}.feather"
             )
             benchmark(
-                lambda: pd.read_feather(path_compression, use_threads=use_threads),
+                lambda: pd.read_feather(path_compression, use_threads=False),
                 10,
                 test_name,
             )
@@ -134,7 +175,7 @@ def read_parquet(path):
 
 
 def csv_to_feather(csv_path, feather_path, names=None):
-    df = read_csv_as_dataframe(csv_path, header=None)
+    df = read_csv_as_df(csv_path, header=None)
     if names:
         df.columns = names
     # zstd has larger compression ratio than lz4 with default compression_level.
@@ -167,7 +208,7 @@ def csv_to_feather(csv_path, feather_path, names=None):
 
 
 def csv_to_parquet(csv_path, parquet_path, names=None):
-    df = read_csv_as_dataframe(csv_path, header=None)
+    df = read_csv_as_df(csv_path, header=None)
     if names:
         df.columns = names
     # brotli has the largest compression ratio.
@@ -198,3 +239,12 @@ def csv_to_parquet(csv_path, parquet_path, names=None):
 
 def df_to_xlsx(df, xlsx_path, header=True):
     df.to_excel(xlsx_path, header=header, index=False, engine="xlsxwriter")
+
+
+def xlsx_to_parquet(xlsx_path, parquet_path, names=None):
+    df = read_xlsx(xlsx_path, header=None)
+    if names:
+        df.columns = names
+    # brotli has the largest compression ratio.
+    df.to_parquet(parquet_path, compression="brotli")
+    return
