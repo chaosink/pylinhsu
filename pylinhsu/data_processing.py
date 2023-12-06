@@ -141,7 +141,7 @@ def csv_str_to_list(str):
 
 def csv_to_df(path, header="infer", names=None):
     sep = get_csv_sep(path)
-    # With `header=0` and `names=[...]`, `names` is used as the header. So `names` has higher priority.
+    # With `header=0` and `names=[...]`, `names` is used as the header. So `names` has higher priority. However the first row of data is lost.
     df = pd.read_csv(path, sep=sep, header=header, names=names)
     return df
 
@@ -186,8 +186,14 @@ def csv_to_parquet(csv_path, parquet_path, names=None):
     benchmark_parquet_write(df, parquet_path)
 
 
-def xlsx_to_df(path, header=0, names=None):
-    # With `header=0` and `names=[...]`, `names` is used as the header. So `names` has higher priority.
+def xlsx_to_df(path, header="infer", names=None):
+    # `read_excel()` doesn't support inferring header as `read_csv()`, hence the implementation here.
+    if header == "infer":
+        if names is None:
+            header = 0
+        else:
+            header = None
+    # With `header=0` and `names=[...]`, `names` is used as the header. So `names` has higher priority. However the first row of data is lost.
     return pd.read_excel(path, header=header, names=names, engine="openpyxl")
 
     # Cannot execute in parallel.
