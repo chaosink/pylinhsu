@@ -102,9 +102,19 @@ def compare_md5s(keys, a, b):
 
 
 def insert_tag(path, tag):
+    # 'test.txt' -> 'test' + '.txt'
     root, ext = os.path.splitext(path)
     result = f"{root}.{tag}{ext}"
     return result
+
+
+def replace_ext(path, ext):
+    root, _ = os.path.splitext(path)
+    result = f"{root}.{ext}"
+    return result
+
+
+join = os.path.join
 
 
 FILESIZE_STR_BASE_1024_MAX_LEN = 11

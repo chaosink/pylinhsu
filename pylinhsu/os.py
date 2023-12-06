@@ -8,10 +8,16 @@ def get_hostname():
     return socket.gethostname()
 
 
-def get_process_output(process):
-    process = subprocess.Popen(process, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+def get_command_output(command, working_dir=".", environ={}):
+    for k, v in environ.items():
+        os.environ[k] = v
+    cwd = os.getcwd()
+    os.chdir(working_dir)
+    log.info(f"Command: {command}")
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
-    return stdout.decode("utf8")
+    os.chdir(cwd)
+    return stdout.decode("utf-8")
 
 
 def run_command(command, working_dir=".", environ={}):

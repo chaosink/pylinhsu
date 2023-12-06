@@ -2,7 +2,7 @@ import os
 import uuid
 import argparse
 from pylinhsu.log import info, error
-from pylinhsu.os import get_process_output
+from pylinhsu.os import get_command_output
 
 
 # ----------------------------------------------------------------------------------------------------
@@ -10,12 +10,12 @@ from pylinhsu.os import get_process_output
 
 
 def get_git_hashes():
-    hashes = get_process_output("git log --format=%h")
+    hashes = get_command_output("git log --format=%h")
     return hashes.strip().split("\n")
 
 
 def get_git_current_branch():
-    branch_current = get_process_output("git rev-parse --abbrev-ref HEAD")
+    branch_current = get_command_output("git rev-parse --abbrev-ref HEAD")
     return branch_current.strip().split("\n")[0]
 
 
@@ -134,10 +134,14 @@ if __name__ == "__main__":
         "-b",
         type=str,
         default=None,
-        help="working branch (None: current branch)",
+        help="working branch (default: current branch)",
     )
     parser_recommit.add_argument(
-        "--work_dir", "-d", type=str, default=".", help="working directory"
+        "--work_dir",
+        "-d",
+        type=str,
+        default=".",
+        help="working directory (default: current working directory)",
     )
     parser_recommit.set_defaults(
         func=lambda args: recommit(args.hash, args.branch, args.work_dir)
@@ -155,10 +159,14 @@ if __name__ == "__main__":
         "-b",
         type=str,
         default=None,
-        help="working branch (None: current branch)",
+        help="working branch (default: current branch)",
     )
     parser_append_all.add_argument(
-        "--work_dir", "-d", type=str, default=".", help="working directory"
+        "--work_dir",
+        "-d",
+        type=str,
+        default=".",
+        help="working directory (default: current working directory)",
     )
     parser_append_all.set_defaults(
         func=lambda args: append_all(args.branch, args.work_dir)
@@ -176,10 +184,14 @@ if __name__ == "__main__":
         "-b",
         type=str,
         default=None,
-        help="working branch (None: current branch)",
+        help="working branch (default: current branch)",
     )
     parser_delete_branch.add_argument(
-        "--work_dir", "-d", type=str, default=".", help="working directory"
+        "--work_dir",
+        "-d",
+        type=str,
+        default=".",
+        help="working directory (default: current working directory)",
     )
     parser_delete_branch.set_defaults(
         func=lambda args: delete_branch(args.branch, args.work_dir)
