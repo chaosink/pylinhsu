@@ -125,7 +125,7 @@ if __name__ == "__main__":
     )
     parser_recommit.add_argument(
         "hash",
-        metavar="hash",
+        # metavar="hash",
         type=str,
         help="hash of the commit after which all the commits are recommitted",
     )

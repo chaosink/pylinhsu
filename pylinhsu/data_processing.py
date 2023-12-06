@@ -284,7 +284,9 @@ def parquet_to_df(path):
     benchmark_parquet_read(path)
 
 
-def parquet_to_csv(parquet_path, csv_path, header=True):
+def parquet_to_csv(parquet_path, csv_path=None, header=True):
+    if csv_path is None:
+        csv_path = fs.replace_ext(parquet_path, "csv")
     df = parquet_to_df(parquet_path)
     df_to_csv(df, csv_path, header)
 
@@ -344,16 +346,21 @@ if __name__ == "__main__":
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser_recommit.add_argument(
-        "parquet_path",
-        metavar="parquet_path",
+        "--parquet_path",
+        "-p",
+        # metavar="parquet_path",
         type=str,
         help="parquet path",
+        required=True,
     )
     parser_recommit.add_argument(
-        "csv_path",
-        metavar="csv_path",
+        "--csv_path",
+        "-c",
+        # metavar="csv_path",
         type=str,
+        default=None,
         help="csv path",
+        required=False,
     )
     parser_recommit.add_argument(
         "--header",
